@@ -24,11 +24,10 @@ jobs:
   #        provenance: true
   
   should-publish:
-    needs: build-image
+    #needs: build-image
     runs-on: ubuntu-latest
     outputs:
       value: ${{ steps.check.outputs.value }}
-      
     steps:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v2
