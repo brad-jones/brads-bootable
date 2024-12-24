@@ -1,5 +1,11 @@
 import $ from "@david/dax";
-import { getLatestCommitSha, setOutput, getSbom, IMAGE } from "./shared.ts";
+import { getLatestCommitSha, setOutput, getSbom, IMAGE, buildDiff } from "./shared.ts";
+
+const nextSbom = await getSbom(`${IMAGE}:next`);
+console.log(nextSbom);
+
+const latestSbom = await getSbom(`${IMAGE}:latest`);
+console.log(latestSbom);
 
 const latestCommitSha = await getLatestCommitSha();
 if (!latestCommitSha) {
@@ -15,27 +21,9 @@ if (latestCommitSha !== nextCommitSha) {
   Deno.exit(0);
 }
 
-const latestSbom = await getSbom(`${IMAGE}:latest`);
-const nextSbom = await getSbom(`${IMAGE}:next`);
-const diff = {
-  added: nextSbom.filter((next) =>
-    latestSbom.find((latest) => latest.name === next.name) === undefined
-  ),
-  updated: nextSbom
-    .filter((next) =>
-      latestSbom.find((latest) =>
-        latest.name === next.name && latest.version !== next.version
-      )
-    )
-    .map((next) => ({
-      name: next.name,
-      newV: next.version,
-      oldV: latestSbom.find((latest) => latest.name === next.name)?.version,
-    })),
-  deleted: latestSbom.filter((latest) =>
-    nextSbom.find((next) => next.name === latest.name) === undefined
-  ),
-};
+//const latestSbom = await getSbom(`${IMAGE}:latest`);
+//const nextSbom = await getSbom(`${IMAGE}:next`);
+const diff = buildDiff(nextSbom, latestSbom);
 
 if (
   diff.added.length === 0 && diff.updated.length === 0 &&

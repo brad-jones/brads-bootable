@@ -12,16 +12,19 @@ const sbomSchema = z.object({
   }),
 });
 
+export type Sbom = Awaited<ReturnType<typeof getSbom>>;
+
 export const getSbom = async (img: string) => {
-  const result = await $`docker buildx imagetools inspect ${img} --format "{{ json .SBOM.SPDX }}"`.json();
+  const result =
+    await $`docker buildx imagetools inspect ${img} --format "{{ json .SBOM.SPDX }}"`
+      .json();
   try {
     return filterPackages(sbomSchema.parse(result));
   } catch (e) {
-    console.log(JSON.stringify(result, null, "  "));
+    console.log(result);
     throw e;
   }
 };
-  ;
 
 const filterPackages = (sbom: z.infer<typeof sbomSchema>) =>
   Object.entries(
@@ -37,6 +40,26 @@ const filterPackages = (sbom: z.infer<typeof sbomSchema>) =>
         return prev;
       }, {} as Record<string, string>),
   ).map((_) => ({ name: _[0], version: _[1] }));
+
+export const buildDiff = (nextSbom: Sbom, latestSbom: Sbom) => ({
+  added: nextSbom.filter((next) =>
+    latestSbom.find((latest) => latest.name === next.name) === undefined
+  ),
+  updated: nextSbom
+    .filter((next) =>
+      latestSbom.find((latest) =>
+        latest.name === next.name && latest.version !== next.version
+      )
+    )
+    .map((next) => ({
+      name: next.name,
+      newV: next.version,
+      oldV: latestSbom.find((latest) => latest.name === next.name)?.version,
+    })),
+  deleted: latestSbom.filter((latest) =>
+    nextSbom.find((next) => next.name === latest.name) === undefined
+  ),
+});
 
 export const getLatestCommitSha = async () => {
   const result = await $`gh release view --json tagName,assets`.noThrow()
