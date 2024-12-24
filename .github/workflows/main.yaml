@@ -59,6 +59,7 @@ jobs:
           --target-arch amd64
           --rootfs ext4
           --chown 1000:1000
+      - run: gzip ./output/bootiso/install.iso
       - uses: actions/upload-artifact@v4
         with:
           name: iso

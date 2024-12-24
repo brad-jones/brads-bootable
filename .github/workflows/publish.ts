@@ -43,8 +43,9 @@ if (!latestCommitSha || !latestSbom) {
 const releaseNotesFile = "./output/notes.md";
 await Deno.writeTextFile(releaseNotesFile, releaseNotes);
 
-await $`mv ./output/bootiso/install.iso ./output/bootiso/fedora-${releaseTag}.iso`;
-await $`gh release create ${releaseTag} --title ${releaseTitle} -F ${releaseNotesFile} ${`./output/bootiso/fedora-${releaseTag}.iso`}`;
+await $`mv ./output/bootiso/install.iso.gz ./output/bootiso/fedora-${releaseTag}.iso.gz`;
+await $``;
+await $`gh release create ${releaseTag} --title ${releaseTitle} -F ${releaseNotesFile} ${`./output/bootiso/fedora-${releaseTag}.iso.gz`}`;
 
 await $`docker buildx imagetools create --append --tag latest next`;
 await $`docker buildx imagetools create --tag ${releaseTag} next`;
