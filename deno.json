@@ -1,6 +1,8 @@
 {
   "imports": {
+    "@cspotcode/outdent": "jsr:@cspotcode/outdent@^0.8.0",
     "@david/dax": "jsr:@david/dax@^0.42.0",
+    "dayjs": "npm:dayjs@^1.11.13",
     "zod": "npm:zod@^3.24.1"
   }
 }

@@ -76,7 +76,9 @@ jobs:
         with:
           name: iso
           path: ./output
-      - run: ls -halR ./output
-
-
-      
+      - run: deno run -A ./.github/workflows/publish.ts
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: ./output/bootiso/**/*
