@@ -35,6 +35,7 @@ jobs:
 
   build-iso:
     if: ${{ needs.should-publish.outputs.value }} == "true"
+    needs:  should-publish
     runs-on: ubuntu-latest
     container:
       image: quay.io/podman/stable
