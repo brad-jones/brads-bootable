@@ -15,6 +15,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: depot/use-containerd-snapshotter-action@v1
       - uses: docker/build-push-action@v6
         with:
           tags: ghcr.io/brad-jones/brads-bootable:next
