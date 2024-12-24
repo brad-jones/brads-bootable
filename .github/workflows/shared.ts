@@ -16,13 +16,17 @@ export type Sbom = { name: string; version: string; }[];
 
 export const getSbom = async (img: string) => {
   const r = await $`docker buildx imagetools inspect ${img} --format "{{ json .SBOM.SPDX }}"`.json();
+
+  if (img.endsWith("next")) {
+    await Deno.writeTextFile("./sbom-next.json", JSON.stringify(r));
+  } else {
+    await Deno.writeTextFile("./sbom-latest.json", JSON.stringify(r));
+  } 
+
   try {
     return filterPackages(sbomSchema.parse(r));
   } catch (e) {
     console.log(e);
-    console.log(JSON.stringify(r).substring(0, 1000));
-    console.log(typeof r['predicate']);
-    console.log(typeof r['predicate']['packages']);
     return undefined;
   }
 };

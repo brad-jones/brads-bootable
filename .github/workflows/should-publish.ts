@@ -1,6 +1,7 @@
 import $ from "@david/dax";
 import { getLatestCommitSha, setOutput, getSbom, IMAGE, buildDiff } from "./shared.ts";
 
+const latestSbom = await getSbom(`${IMAGE}:latest`);
 const nextSbom = await getSbom(`${IMAGE}:next`);
 if (!nextSbom) {
   $.logError(`next image does not have an sbom`);
@@ -21,7 +22,7 @@ if (latestCommitSha !== nextCommitSha) {
   Deno.exit(0);
 }
 
-const latestSbom = await getSbom(`${IMAGE}:latest`);
+
 if (!latestSbom) {
   $.log("should publish: latest image does not contain an sbom");
   await setOutput(`value=true`);
