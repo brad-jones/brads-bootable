@@ -25,11 +25,11 @@ jobs:
     #needs: build-image
     runs-on: ubuntu-latest
     container:
-      image: fedora:41
+      image: quay.io/podman/stable
       options: --privileged
     steps:
       - uses: actions/checkout@v4
-      - run: dnf install -y podman
+      #- run: dnf install -y podman
       - run: mkdir ./output
       # see: https://github.com/osbuild/bootc-image-builder/issues/446
       #- run: |
