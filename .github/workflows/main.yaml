@@ -74,6 +74,7 @@ jobs:
       - uses: denoland/setup-deno@v2
       - uses: actions/download-artifact@v4
         with:
+          name: iso
           path: ./output
       - run: ls -halR ./output
 
