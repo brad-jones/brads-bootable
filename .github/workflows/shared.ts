@@ -1,5 +1,5 @@
 import $ from "@david/dax";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 
 export const IMAGE = "ghcr.io/brad-jones/brads-bootable";
 
@@ -21,8 +21,13 @@ export const getSbom = async (img: string) => {
       ),
     );
   } catch (e) {
-    console.error(e);
-    return undefined;
+    if (
+      e instanceof ZodError && e.issues[0].code === "invalid_type" &&
+      e.issues[0].received === "null" && e.issues[0].path.length === 0
+    ) {
+      return undefined;
+    }
+    throw e;
   }
 };
 

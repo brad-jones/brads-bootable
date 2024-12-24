@@ -40,7 +40,7 @@ if (!latestCommitSha || !latestSbom) {
   `;
 }
 
-const releaseNotesFile = "./dist/notes.md";
+const releaseNotesFile = "./output/notes.md";
 await Deno.writeTextFile(releaseNotesFile, releaseNotes);
 
 await $`mv ./output/bootiso/install.iso ./output/bootiso/fedora-${releaseTag}.iso`;
