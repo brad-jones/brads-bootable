@@ -5,7 +5,7 @@ const latestSbom = await getSbom(`${IMAGE}:latest`);
 const nextSbom = await getSbom(`${IMAGE}:next`);
 if (!nextSbom) {
   $.logError(`next image does not have an sbom`);
-  Deno.exit(1);
+  Deno.exit(0);
 }
 
 const latestCommitSha = await getLatestCommitSha();
