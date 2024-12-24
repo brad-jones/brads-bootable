@@ -2,10 +2,10 @@ import $ from "@david/dax";
 import { getLatestCommitSha, setOutput, getSbom, IMAGE, buildDiff } from "./shared.ts";
 
 const nextSbom = await getSbom(`${IMAGE}:next`);
-console.log(nextSbom);
+//console.log(nextSbom);
 
 const latestSbom = await getSbom(`${IMAGE}:latest`);
-console.log(latestSbom);
+//console.log(latestSbom);
 
 const latestCommitSha = await getLatestCommitSha();
 if (!latestCommitSha) {

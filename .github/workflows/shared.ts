@@ -22,6 +22,9 @@ export const getSbom = async (img: string) => {
     return filterPackages(sbomSchema.parse(result));
   } catch (e) {
     console.log(result);
+    console.log(result['predicate']);
+    console.log(result['packages']);
+    console.log(result['packages'][0]);
     throw e;
   }
 };
