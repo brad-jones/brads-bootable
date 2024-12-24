@@ -1,0 +1,42 @@
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      # see: https://github.com/osbuild/bootc-image-builder/issues/446
+      #- run: |
+      #    sudo rm -rf /var/lib/containers/storage
+      #    sudo mkdir -p /etc/containers
+      #    echo -e "[storage]\ndriver = \"overlay\"\nrunroot = \"/run/containers/storage\"\ngraphroot = \"/var/lib/containers/storage\"" | sudo tee /etc/containers/storage.conf
+
+      - run: docker build -t ghcr.io/brad-jones/brads-bootable:latest .
+
+      - run: >-
+          docker run --rm -it --privileged
+          --security-opt label=type:unconfined_t
+          -v $(pwd)/output:/output
+          -v $(pwd)/config.toml:/config.toml:ro
+          -v /var/lib/containers/storage:/var/lib/containers/storage
+          quay.io/centos-bootc/bootc-image-builder:sha256-b4eb0793837e627b5cd08bbb641ddf7f22b013d5d2f4d7d593ca6261f2126550
+          ghcr.io/brad-jones/brads-bootable:latest
+          --output /output/
+          --local
+          --type anaconda-iso
+          --target-arch amd64
+          --rootfs ext4
+          --chown 1000:1000
+      
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
