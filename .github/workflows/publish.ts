@@ -69,4 +69,4 @@ await $`oras push ${`${BOOTABLE_ISO}:latest,${releaseTag}`} ${isoFile}`;
 await $`docker buildx imagetools create --append --tag ${`${IMAGE}:latest`} ${`${IMAGE}:next`}`;
 await $`docker buildx imagetools create --tag ${`${IMAGE}:${releaseTag}`} ${`${IMAGE}:next`}`;
 
-await $`bash -c ${`gh release create ${releaseTag} --title ${releaseTitle} -F ${releaseNotesFile}`}`;
+await $`gh release create ${releaseTag} --title ${releaseTitle} -F ${releaseNotesFile}`;
