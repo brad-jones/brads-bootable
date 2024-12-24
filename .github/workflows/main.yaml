@@ -20,6 +20,7 @@ jobs:
 
       - run: podman build -t ghcr.io/brad-jones/brads-bootable:latest .
 
+      - run: mkdir ./output
       - run: >-
           sudo podman run --rm --privileged
           --security-opt label=type:unconfined_t
