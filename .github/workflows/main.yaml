@@ -13,10 +13,10 @@ jobs:
       - uses: actions/checkout@v4
 
       # see: https://github.com/osbuild/bootc-image-builder/issues/446
-      #- run: |
-      #    sudo rm -rf /var/lib/containers/storage
-      #    sudo mkdir -p /etc/containers
-      #    echo -e "[storage]\ndriver = \"overlay\"\nrunroot = \"/run/containers/storage\"\ngraphroot = \"/var/lib/containers/storage\"" | sudo tee /etc/containers/storage.conf
+      - run: |
+          sudo rm -rf /var/lib/containers/storage
+          sudo mkdir -p /etc/containers
+          echo -e "[storage]\ndriver = \"overlay\"\nrunroot = \"/run/containers/storage\"\ngraphroot = \"/var/lib/containers/storage\"" | sudo tee /etc/containers/storage.conf
 
       - run: docker build -t ghcr.io/brad-jones/brads-bootable:latest .
 
