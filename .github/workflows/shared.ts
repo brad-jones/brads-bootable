@@ -10,23 +10,18 @@ const sbomSchema = z.object({
   })),
 });
 
-export type Sbom = { name: string; version: string; }[];
+export type Sbom = { name: string; version: string }[];
 
 export const getSbom = async (img: string) => {
-  const r = await $`docker buildx imagetools inspect ${img} --format "{{ json .SBOM.SPDX }}"`.json();
-
-  if (img.endsWith("next")) {
-    await Deno.writeTextFile("./sbom-next.json", JSON.stringify(r));
-  } else {
-    await Deno.writeTextFile("./sbom-latest.json", JSON.stringify(r));
-  } 
-
   try {
-    return filterPackages(sbomSchema.parse(r));
+    return filterPackages(
+      sbomSchema.parse(
+        await $`docker buildx imagetools inspect ${img} --format "{{ json .SBOM.SPDX }}"`
+          .json(),
+      ),
+    );
   } catch (e) {
-    console.log(`START: ${img}`);
-    console.log(e);
-    console.log(`END: ${img}`);
+    console.error(e);
     return undefined;
   }
 };
