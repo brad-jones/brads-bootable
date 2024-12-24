@@ -4,12 +4,10 @@ import { z } from "zod";
 export const IMAGE = "ghcr.io/brad-jones/brads-bootable";
 
 const sbomSchema = z.object({
-  predicate: z.object({
-    packages: z.array(z.object({
-      name: z.string(),
-      versionInfo: z.string().optional(),
-    })),
-  }),
+  packages: z.array(z.object({
+    name: z.string(),
+    versionInfo: z.string().optional(),
+  })),
 });
 
 export type Sbom = { name: string; version: string; }[];
