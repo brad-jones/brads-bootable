@@ -12,11 +12,16 @@ const sbomSchema = z.object({
   }),
 });
 
-export const getSbom = async (img: string) =>
-  filterPackages(sbomSchema.parse(
-    await $`docker buildx imagetools inspect ${img} --format "{{ json .SBOM.SPDX }}"`
-      .json(),
-  ));
+export const getSbom = async (img: string) => {
+  const result = await $`docker buildx imagetools inspect ${img} --format "{{ json .SBOM.SPDX }}"`.json();
+  try {
+    return filterPackages(sbomSchema.parse(result));
+  } catch (e) {
+    console.log(JSON.stringify(result, null, "  "));
+    throw e;
+  }
+};
+  ;
 
 const filterPackages = (sbom: z.infer<typeof sbomSchema>) =>
   Object.entries(
