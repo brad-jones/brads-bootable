@@ -29,11 +29,14 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       value: ${{ steps.check.outputs.value }}
+      
     steps:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v2
       - id: check
         run: deno run -A ./.github/workflows/should-publish.ts
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   build-iso:
     if: ${{ needs.should-publish.outputs.value }} == "true"
