@@ -24,7 +24,9 @@ jobs:
   build-iso:
     #needs: build-image
     runs-on: ubuntu-latest
-    container: fedora:41
+    container:
+      image: fedora:41
+      options: --privileged
     steps:
       - uses: actions/checkout@v4
       - run: dnf install -y podman
