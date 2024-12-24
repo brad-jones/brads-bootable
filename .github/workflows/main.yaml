@@ -4,36 +4,38 @@ on:
       - master
 
 jobs:
-  build-image:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      
-      - uses: docker/build-push-action@v6
-        with:
-          tags: ghcr.io/brad-jones/brads-bootable:latest
-          push: true
+  #build-image:
+  #  runs-on: ubuntu-latest
+  #  permissions:
+  #    contents: read
+  #    packages: write
+  #  steps:
+  #    - uses: docker/login-action@v3
+  #      with:
+  #        registry: ghcr.io
+  #        username: ${{ github.actor }}
+  #        password: ${{ secrets.GITHUB_TOKEN }}
+  #    
+  #    - uses: docker/build-push-action@v6
+  #      with:
+  #        tags: ghcr.io/brad-jones/brads-bootable:latest
+  #        push: true
   
   build-iso:
-    needs: build-image
+    #needs: build-image
     runs-on: ubuntu-latest
+    container: fedora:41
     steps:
       - uses: actions/checkout@v4
+      - run: dnf install -y podman
       - run: mkdir ./output
       # see: https://github.com/osbuild/bootc-image-builder/issues/446
-      - run: |
-          sudo rm -rf /var/lib/containers/storage
-          sudo mkdir -p /etc/containers
-          echo -e "[storage]\ndriver = \"overlay\"\nrunroot = \"/run/containers/storage\"\ngraphroot = \"/var/lib/containers/storage\"" | sudo tee /etc/containers/storage.conf
+      #- run: |
+      #    sudo rm -rf /var/lib/containers/storage
+      #    sudo mkdir -p /etc/containers
+      #    echo -e "[storage]\ndriver = \"overlay\"\nrunroot = \"/run/containers/storage\"\ngraphroot = \"/var/lib/containers/storage\"" | sudo tee /etc/containers/storage.conf
       - run: >-
-          sudo podman run --rm --privileged
+          podman run --rm --privileged
           --security-opt label=type:unconfined_t
           -v $(pwd)/output:/output
           -v $(pwd)/config.toml:/config.toml:ro
