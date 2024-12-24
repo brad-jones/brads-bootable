@@ -14,12 +14,10 @@ jobs:
 
       # see: https://github.com/osbuild/bootc-image-builder/issues/446
       - run: |
-          sudo systemctl stop docker.service
-          sudo systemctl stop docker.socket
           sudo rm -rf /var/lib/containers/storage
+          sudo mkdir -p /var/lib/containers/storage
           sudo mkdir -p /etc/containers
           echo -e "[storage]\ndriver = \"overlay\"\nrunroot = \"/run/containers/storage\"\ngraphroot = \"/var/lib/containers/storage\"" | sudo tee /etc/containers/storage.conf
-          sudo systemctl start docker
 
       - run: docker build -t ghcr.io/brad-jones/brads-bootable:latest .
 
