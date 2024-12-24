@@ -5,7 +5,7 @@ import utc from "dayjs/plugin/utc.js";
 import { buildDiff, getLatestCommitSha, getSbom, IMAGE } from "./shared.ts";
 dayjs.extend(utc);
 
-const BOOTABLE_ISO = `ghcr.io/brad-jones/brads-bootable-iso`;
+const BOOTABLE_ISO = `ghcr.io/brad-jones/brads-bootable/iso`;
 
 const dateString = dayjs.utc().format("YYYYMMDD");
 const latestCommitSha = await getLatestCommitSha();
@@ -49,7 +49,7 @@ if (!latestCommitSha || !latestSbom) {
     \`\`\`
     oras pull ${BOOTABLE_ISO}:${releaseTag}
     \`\`\`
-    
+
     ## Packages
     ${sbomDiff.added.length === 0 && sbomDiff.updated.length === 0 && sbomDiff.deleted.length === 0 ? "No changes to installed packages." : ""}
     ${sbomDiff.added.length > 0 ? `### Added\n${sbomDiff.added.map(({ name, version }) => `- ${name}: ${version}`).join("\n")}` : ""}
