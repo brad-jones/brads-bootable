@@ -6,17 +6,21 @@ import { buildDiff, getLatestCommitSha, getSbom, IMAGE } from "./shared.ts";
 dayjs.extend(utc);
 
 const dateString = dayjs.utc().format("YYYYMMDD");
-const nextSbom = await getSbom(`${IMAGE}:next`);
-const latestSbom = await getSbom(`${IMAGE}:latest`);
-const sbomDiff = buildDiff(nextSbom, latestSbom);
 const latestCommitSha = await getLatestCommitSha();
 const nextCommitSha = Deno.env.get("GITHUB_SHA")!.substring(0, 8);
 const fedoraVersion = (await Deno.readTextFile("Dockerfile")).split("\n")[0].split(":")[1].trim();
 const releaseTitle = `Fedora ${fedoraVersion} - ${dateString} (sha: ${nextCommitSha})`;
 const releaseTag = `${fedoraVersion}-${dateString}-${nextCommitSha}`;
 
+const latestSbom = await getSbom(`${IMAGE}:latest`);
+const nextSbom = await getSbom(`${IMAGE}:next`);
+if (!nextSbom) {
+  $.logError(`next image does not have an sbom`);
+  Deno.exit(1);
+}
+
 let releaseNotes = "";
-if (!latestCommitSha) {
+if (!latestCommitSha || !latestSbom) {
   releaseNotes = outdent`
     ## Packages
 
@@ -24,6 +28,7 @@ if (!latestCommitSha) {
     ${nextSbom.map(({ name, version }) => `- ${name}: ${version}`).join("\n")}
   `;
 } else {
+  const sbomDiff = buildDiff(nextSbom, latestSbom);
   releaseNotes = outdent`
     **Build Changes:** ${latestCommitSha !== nextCommitSha ? `https://github.com/${Deno.env.get("GITHUB_REPOSITORY")!}/compare/${latestCommitSha}...${nextCommitSha}` : "n/a"}
     

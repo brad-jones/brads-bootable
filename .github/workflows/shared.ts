@@ -12,20 +12,13 @@ const sbomSchema = z.object({
   }),
 });
 
-export type Sbom = Awaited<ReturnType<typeof getSbom>>;
+export type Sbom = { name: string; version: string; }[];
 
 export const getSbom = async (img: string) => {
-  const result =
-    await $`docker buildx imagetools inspect ${img} --format "{{ json .SBOM.SPDX }}"`
-      .json();
   try {
-    return filterPackages(sbomSchema.parse(result));
-  } catch (e) {
-    console.log(result);
-    console.log(result['predicate']);
-    console.log(result['packages']);
-    console.log(result['packages'][0]);
-    throw e;
+    return filterPackages(sbomSchema.parse(await $`docker buildx imagetools inspect ${img} --format "{{ json .SBOM.SPDX }}"`.json()));
+  } catch (_) {
+    return undefined;
   }
 };
 
