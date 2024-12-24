@@ -5,6 +5,8 @@ import utc from "dayjs/plugin/utc.js";
 import { buildDiff, getLatestCommitSha, getSbom, IMAGE } from "./shared.ts";
 dayjs.extend(utc);
 
+const BOOTABLE_ISO = `ghcr.io/brad-jones/brads-bootable-iso`;
+
 const dateString = dayjs.utc().format("YYYYMMDD");
 const latestCommitSha = await getLatestCommitSha();
 const nextCommitSha = Deno.env.get("GITHUB_SHA")!.substring(0, 8);
@@ -22,6 +24,14 @@ if (!nextSbom) {
 let releaseNotes = "";
 if (!latestCommitSha || !latestSbom) {
   releaseNotes = outdent`
+    ## Bare Metal Iso
+
+    Download with [ORAS](https://oras.land)
+
+    \`\`\`
+    oras pull ${BOOTABLE_ISO}:${releaseTag}
+    \`\`\`
+
     ## Packages
 
     ### Initial
@@ -31,6 +41,14 @@ if (!latestCommitSha || !latestSbom) {
   const sbomDiff = buildDiff(nextSbom, latestSbom);
   releaseNotes = outdent`
     **Build Changes:** ${latestCommitSha !== nextCommitSha ? `https://github.com/${Deno.env.get("GITHUB_REPOSITORY")!}/compare/${latestCommitSha}...${nextCommitSha}` : "n/a"}
+    
+    ## Bare Metal Iso
+
+    Download with [ORAS](https://oras.land)
+    
+    \`\`\`
+    oras pull ${BOOTABLE_ISO}:${releaseTag}
+    \`\`\`
     
     ## Packages
     ${sbomDiff.added.length === 0 && sbomDiff.updated.length === 0 && sbomDiff.deleted.length === 0 ? "No changes to installed packages." : ""}
@@ -43,9 +61,12 @@ if (!latestCommitSha || !latestSbom) {
 const releaseNotesFile = "./output/notes.md";
 await Deno.writeTextFile(releaseNotesFile, releaseNotes);
 
-await $`mv ./output/bootiso/install.iso.gz ./output/bootiso/fedora-${releaseTag}.iso.gz`;
-await $``;
-await $`gh release create ${releaseTag} --title ${releaseTitle} -F ${releaseNotesFile} ${`./output/bootiso/fedora-${releaseTag}.iso.gz`}`;
+const isoFileName = `fedora-${releaseTag}.iso`;
+const isoFile = `./output/bootiso/${isoFileName}`;
+await Deno.rename("./output/bootiso/install.iso", isoFile);
+await $`oras push ${`${BOOTABLE_ISO}:latest,${releaseTag}`} ${isoFile}`;
 
 await $`docker buildx imagetools create --append --tag latest next`;
 await $`docker buildx imagetools create --tag ${releaseTag} next`;
+
+await $`bash -c ${`gh release create ${releaseTag} --title ${releaseTitle} -F ${releaseNotesFile}`}`;
