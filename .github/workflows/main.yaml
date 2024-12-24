@@ -4,38 +4,44 @@ on:
       - master
 
 jobs:
-  #build-image:
-  #  runs-on: ubuntu-latest
-  #  permissions:
-  #    contents: read
-  #    packages: write
-  #  steps:
-  #    - uses: docker/login-action@v3
-  #      with:
-  #        registry: ghcr.io
-  #        username: ${{ github.actor }}
-  #        password: ${{ secrets.GITHUB_TOKEN }}
-  #    
-  #    - uses: docker/build-push-action@v6
-  #      with:
-  #        tags: ghcr.io/brad-jones/brads-bootable:latest
-  #        push: true
+  build-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          tags: ghcr.io/brad-jones/brads-bootable:next
+          push: true
+          sbom: true
+          provenance: true
   
+  should-publish:
+    needs: build-image
+    runs-on: ubuntu-latest
+    outputs:
+      value: ${{ steps.check.outputs.value }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+      - id: check
+        run: deno run -A ./.github/workflows/should-publish.ts
+
   build-iso:
-    #needs: build-image
+    if: ${{ needs.should-publish.outputs.value }} == "true"
     runs-on: ubuntu-latest
     container:
       image: quay.io/podman/stable
       options: --privileged
     steps:
       - uses: actions/checkout@v4
-      #- run: dnf install -y podman
       - run: mkdir ./output
-      # see: https://github.com/osbuild/bootc-image-builder/issues/446
-      #- run: |
-      #    sudo rm -rf /var/lib/containers/storage
-      #    sudo mkdir -p /etc/containers
-      #    echo -e "[storage]\ndriver = \"overlay\"\nrunroot = \"/run/containers/storage\"\ngraphroot = \"/var/lib/containers/storage\"" | sudo tee /etc/containers/storage.conf
       - run: >-
           podman run --rm --privileged
           --security-opt label=type:unconfined_t
@@ -43,12 +49,28 @@ jobs:
           -v $(pwd)/config.toml:/config.toml:ro
           -v /var/lib/containers/storage:/var/lib/containers/storage
           quay.io/centos-bootc/bootc-image-builder:sha256-b4eb0793837e627b5cd08bbb641ddf7f22b013d5d2f4d7d593ca6261f2126550
-          ghcr.io/brad-jones/brads-bootable:latest
+          ghcr.io/brad-jones/brads-bootable:next
           --output /output/
           --type anaconda-iso
           --target-arch amd64
           --rootfs ext4
           --chown 1000:1000
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iso
+          path: ./output/**/*
+  
+  publish:
+    if: ${{ needs.should-publish.outputs.value }} == "true"
+    needs: build-iso
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+      - uses: actions/download-artifact@v4
+        with:
+          path: ./output
+      - run: ls -halR ./output
 
 
       
