@@ -24,14 +24,16 @@ export const getSbom = async (img: string) => {
   try {
     return filterPackages(sbomSchema.parse(r));
   } catch (e) {
+    console.log(`START: ${img}`);
     console.log(e);
+    console.log(`END: ${img}`);
     return undefined;
   }
 };
 
 const filterPackages = (sbom: z.infer<typeof sbomSchema>) =>
   Object.entries(
-    sbom.predicate.packages
+    sbom.packages
       .filter((_) => typeof _.versionInfo === "string")
       .map((_) => ({ name: _.name, version: _.versionInfo! }))
       .reduce((prev, cur) => {
