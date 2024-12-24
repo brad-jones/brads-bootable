@@ -68,6 +68,10 @@ jobs:
     if: ${{ needs.should-publish.outputs.value }} == "true"
     needs: build-iso
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
     steps:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v2
