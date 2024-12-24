@@ -15,9 +15,14 @@ const sbomSchema = z.object({
 export type Sbom = { name: string; version: string; }[];
 
 export const getSbom = async (img: string) => {
+  const r = await $`docker buildx imagetools inspect ${img} --format "{{ json .SBOM.SPDX }}"`.json();
   try {
-    return filterPackages(sbomSchema.parse(await $`docker buildx imagetools inspect ${img} --format "{{ json .SBOM.SPDX }}"`.json()));
-  } catch (_) {
+    return filterPackages(sbomSchema.parse(r));
+  } catch (e) {
+    console.log(e);
+    console.log(JSON.stringify(r).substring(0, 1000));
+    console.log(typeof r['predicate']);
+    console.log(typeof r['predicate']['packages']);
     return undefined;
   }
 };
