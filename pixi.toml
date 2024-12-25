@@ -1,0 +1,22 @@
+[project]
+name = "brads-bootable"
+authors = ["Brad Jones <brad@bjc.id.au>"]
+channels = ["https://repo.prefix.dev/brads-forge", "conda-forge"]
+description = "A Fedora bootc build for Brads Homelab"
+platforms = ["linux-64"]
+
+[tasks]
+init = "task init"
+
+[tasks.code]
+depends-on = ["init"]
+cmd = "code ."
+
+[dependencies]
+deno = ">=2.1.4,<2.2"
+dprint = ">=0.48.0,<0.49"
+oras = ">=1.2.0,<2"
+lefthook = ">=1.10.0,<2"
+go-shfmt = ">=3.10.0,<4"
+cocogitto = ">=6.2.0,<7"
+task = ">=3.40.1,<4"

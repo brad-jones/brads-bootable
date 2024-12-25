@@ -1,5 +1,11 @@
 import $ from "@david/dax";
-import { getLatestCommitSha, setOutput, getSbom, IMAGE, buildDiff } from "./shared.ts";
+import {
+  buildDiff,
+  getLatestCommitSha,
+  getSbom,
+  IMAGE,
+  setOutput,
+} from "./shared.ts";
 
 const latestCommitSha = await getLatestCommitSha();
 if (!latestCommitSha) {

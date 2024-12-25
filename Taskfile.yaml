@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+# https://taskfile.dev
+version: "3"
+
+dotenv: [".env"]
+
+tasks:
+  init:
+    desc: Setup dev env
+    cmds:
+      - lefthook install -f
+      - git config pull.rebase true
+      - git config core.editor "code --wait"
+      - git config commit.template "$PWD/.gitmsgtpl"
+
+  build:image:
+    cmds:
+      - docker build -t ghcr.io/brad-jones/brads-bootable:dev ./src

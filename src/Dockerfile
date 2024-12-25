@@ -16,3 +16,11 @@ RUN dnf remove -y nano
 
 # Then update what we have left over
 RUN dnf update -y && dnf clean all
+
+# Stop blasting the console (the bare metal one) with logs from the kernel.
+# see: https://superuser.com/questions/351387
+# also: https://github.com/coreos/fedora-coreos-tracker/issues/1244
+COPY ./etc/sysctl.d/01-printk.conf /etc/sysctl.d/01-printk.conf
+
+# Allow users added to the "wheel" group to sudo without a password
+COPY ./etc/sudoers.d/wheel /etc/sudoers.d/wheel

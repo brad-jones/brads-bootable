@@ -1,5 +1,5 @@
-import $ from "@david/dax";
 import { outdent } from "@cspotcode/outdent";
+import $ from "@david/dax";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 import { buildDiff, getLatestCommitSha, getSbom, IMAGE } from "./shared.ts";
@@ -10,8 +10,10 @@ const BOOTABLE_ISO = `ghcr.io/brad-jones/brads-bootable/iso`;
 const dateString = dayjs.utc().format("YYYYMMDD");
 const latestCommitSha = await getLatestCommitSha();
 const nextCommitSha = Deno.env.get("GITHUB_SHA")!.substring(0, 8);
-const fedoraVersion = (await Deno.readTextFile("Dockerfile")).split("\n")[0].split(":")[1].trim();
-const releaseTitle = `Fedora ${fedoraVersion} - ${dateString} (sha: ${nextCommitSha})`;
+const fedoraVersion = (await Deno.readTextFile("Dockerfile")).split("\n")[0]
+  .split(":")[1].trim();
+const releaseTitle =
+  `Fedora ${fedoraVersion} - ${dateString} (sha: ${nextCommitSha})`;
 const releaseTag = `${fedoraVersion}-${dateString}-${nextCommitSha}`;
 
 const latestSbom = await getSbom(`${IMAGE}:latest`);
@@ -40,7 +42,13 @@ if (!latestCommitSha || !latestSbom) {
 } else {
   const sbomDiff = buildDiff(nextSbom, latestSbom);
   releaseNotes = outdent`
-    **Build Changes:** ${latestCommitSha !== nextCommitSha ? `https://github.com/${Deno.env.get("GITHUB_REPOSITORY")!}/compare/${latestCommitSha}...${nextCommitSha}` : "n/a"}
+    **Build Changes:** ${
+    latestCommitSha !== nextCommitSha
+      ? `https://github.com/${Deno.env.get(
+        "GITHUB_REPOSITORY",
+      )!}/compare/${latestCommitSha}...${nextCommitSha}`
+      : "n/a"
+  }
     
     ## Bare Metal Iso
 
@@ -51,10 +59,38 @@ if (!latestCommitSha || !latestSbom) {
     \`\`\`
 
     ## Packages
-    ${sbomDiff.added.length === 0 && sbomDiff.updated.length === 0 && sbomDiff.deleted.length === 0 ? "No changes to installed packages." : ""}
-    ${sbomDiff.added.length > 0 ? `### Added\n${sbomDiff.added.map(({ name, version }) => `- ${name}: ${version}`).join("\n")}` : ""}
-    ${sbomDiff.updated.length > 0 ? `### Updated\n${sbomDiff.updated.map(({ name, oldV, newV }) => `- ${name}: ${oldV} => ${newV}`).join("\n")}` : ""}
-    ${sbomDiff.deleted.length > 0 ? `### Deleted\n${sbomDiff.deleted.map(({ name, version }) => `- ${name}: ${version}`).join("\n")}`: ""}
+    ${
+    sbomDiff.added.length === 0 && sbomDiff.updated.length === 0 &&
+      sbomDiff.deleted.length === 0
+      ? "No changes to installed packages."
+      : ""
+  }
+    ${
+    sbomDiff.added.length > 0
+      ? `### Added\n${
+        sbomDiff.added.map(({ name, version }) => `- ${name}: ${version}`).join(
+          "\n",
+        )
+      }`
+      : ""
+  }
+    ${
+    sbomDiff.updated.length > 0
+      ? `### Updated\n${
+        sbomDiff.updated.map(({ name, oldV, newV }) =>
+          `- ${name}: ${oldV} => ${newV}`
+        ).join("\n")
+      }`
+      : ""
+  }
+    ${
+    sbomDiff.deleted.length > 0
+      ? `### Deleted\n${
+        sbomDiff.deleted.map(({ name, version }) => `- ${name}: ${version}`)
+          .join("\n")
+      }`
+      : ""
+  }
   `;
 }
 
