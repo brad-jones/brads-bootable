@@ -11,8 +11,11 @@ RUN FILES=(/etc/yum.repos.d/fedora*.repo); sed --in-place \
 # Stop dnf from installing shit we don't need
 RUN echo "install_weak_deps=false" >> /etc/dnf/dnf.conf
 
-# Then update what we have left over
-RUN dnf update -y && dnf clean all
+# Update & install some extras
+RUN dnf update -y \
+  && dnf install -y \
+    tree \
+  && dnf clean all
 
 # Stop blasting the console (the bare metal one) with logs from the kernel.
 # see: https://superuser.com/questions/351387
@@ -21,3 +24,8 @@ COPY ./etc/sysctl.d/01-printk.conf /etc/sysctl.d/01-printk.conf
 
 # Allow users added to the "wheel" group to sudo without a password
 COPY ./etc/sudoers.d/wheel /etc/sudoers.d/wheel
+
+# As cool as having my system automatically update & reboot,
+# I think I'd like to leave the rebooting up to me to do manually.
+# Especially given that this is a single node system for now.
+COPY ./etc/systemd/system/bootc-fetch-apply-updates.service.d/override.conf /etc/systemd/system/bootc-fetch-apply-updates.service.d/override.conf
