@@ -14,13 +14,7 @@ user --name brad-jones --groups wheel
 sshkey --username brad-jones "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPT6C2E9dnsU5qoa3Wpqj8t965Vn0vUinNqXOnOcU8fn"
 network --activate --device=enp88s0 --onboot=yes --bootproto=static --noipv6 --ip=192.168.254.4 --netmask=255.255.255.0 --gateway=192.168.254.1 --nameserver=192.168.254.1 --hostname=mini1
 reboot --eject
+%post
+bootc switch --mutate-in-place --transport registry ghcr.io/brad-jones/brads-bootable:latest
+%end
 """
-
-# %post
-# bootc switch --mutate-in-place --transport registry ghcr.io/brad-jones/brads-bootable:latest
-#
-# # used during automatic image testing as finished marker
-# if [ -c /dev/ttyS0 ]; then
-#     echo "Install finished" > /dev/ttyS0
-# fi
-# %end
