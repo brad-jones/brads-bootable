@@ -16,3 +16,7 @@ tasks:
   build:image:
     cmds:
       - docker build -t ghcr.io/brad-jones/brads-bootable:dev ./src
+
+  pull:iso:
+    cmds:
+      - oras pull ghcr.io/brad-jones/brads-bootable/iso:latest -o ./iso

@@ -2,3 +2,12 @@
 name = "brad-jones"
 key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPT6C2E9dnsU5qoa3Wpqj8t965Vn0vUinNqXOnOcU8fn"
 groups = ["wheel"]
+
+[customizations.installer.kickstart]
+contents = """
+text --non-interactive
+lang en_AU.UTF-8
+timezone Australia/Melbourne
+ignoredisk --only-use nvme*
+network --activate --device=enp88s0 --onboot=yes --bootproto=static --noipv6 --ip=192.168.254.4 --netmask=255.255.255.0 --gateway=192.168.254.1 --nameserver=192.168.254.1 --hostname=mini1
+"""
