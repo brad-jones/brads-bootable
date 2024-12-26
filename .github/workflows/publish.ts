@@ -101,5 +101,8 @@ const isoFileName = `fedora-${releaseTag}.iso`;
 const isoFile = `./output/bootiso/${isoFileName}`;
 await Deno.rename("./output/bootiso/install.iso", isoFile);
 await $`oras push ${`${BOOTABLE_ISO}:latest,${releaseTag}`} ${isoFile}`;
+
 await $`docker buildx imagetools create --tag ${`${IMAGE}:latest`} ${`${IMAGE}:next`}`;
+await $`docker buildx imagetools create --tag ${`${IMAGE}:${releaseTag}`} ${`${IMAGE}:next`}`;
+
 await $`gh release create ${releaseTag} --title ${releaseTitle} -F ${releaseNotesFile}`;

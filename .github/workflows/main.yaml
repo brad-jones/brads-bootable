@@ -7,23 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  next-tag:
-    runs-on: ubuntu-latest
-    outputs:
-      value: ${{ steps.tag.outputs.value }}
-    steps:
-      - name: ⬇️ Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: ⚙️ Install Deno
-        uses: denoland/setup-deno@v2
-
-      - name: Get next tag
-        id: tag
-        run: deno run -A ./.github/workflows/next-tag.ts
-
   build-image:
-    needs: next-tag
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -46,9 +30,7 @@ jobs:
           push: true
           sbom: true
           provenance: true
-          tags: |
-            ghcr.io/brad-jones/brads-bootable:next
-            ghcr.io/brad-jones/brads-bootable:${{ needs.next-tag.outputs.value }}
+          tags: ghcr.io/brad-jones/brads-bootable:next
 
   should-publish:
     needs: build-image
@@ -79,6 +61,11 @@ jobs:
       - name: ⬇️ Checkout Repo
         uses: actions/checkout@v4
 
+      - name: Tag next image locally
+        run: >-
+          podman pull ghcr.io/brad-jones/brads-bootable:next &&
+          podman tag ghcr.io/brad-jones/brads-bootable:next ghcr.io/brad-jones/brads-bootable:latest
+
       - name: 💿 Build Unattended Anaconda Installer ISO
         run: >-
           mkdir ./output &&
@@ -88,7 +75,8 @@ jobs:
           -v $(pwd)/src/config.toml:/config.toml:ro
           -v /var/lib/containers/storage:/var/lib/containers/storage
           quay.io/centos-bootc/bootc-image-builder:sha256-b4eb0793837e627b5cd08bbb641ddf7f22b013d5d2f4d7d593ca6261f2126550
-          ghcr.io/brad-jones/brads-bootable:${{ needs.next-tag.outputs.value }}
+          ghcr.io/brad-jones/brads-bootable:latest
+          --local
           --output /output/
           --type anaconda-iso
           --target-arch amd64
