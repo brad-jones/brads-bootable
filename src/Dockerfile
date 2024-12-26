@@ -12,7 +12,41 @@ RUN FILES=(/etc/yum.repos.d/fedora*.repo); sed --in-place \
 RUN echo "install_weak_deps=false" >> /etc/dnf/dnf.conf
 
 # Remove some stuff from the massive bootc image we know for sure that we don't need
-RUN dnf remove -y nano
+RUN dnf remove -y \
+  abattis-cantarell-fonts \
+  adcli \
+  adobe-source-code-pro-fonts \
+  amd-gpu-firmware \
+  amd-ucode-firmware \
+  atheros-firmware \
+  avahi \
+  avahi-libs \
+  bluez \
+  brcmfmac-firmware \
+  btrfs-progs \
+  cirrus-audio-firmware \
+  duktape \
+  flatpak-session-helper \
+  fonts-filesystem \
+  intel-audio-firmware \
+  jq \
+  nano \
+  ntfs-3g \
+  ntfs-3g-libs \
+  ntfs-3g-system-compression \
+  ntfsprogs \
+  nvidia-gpu-firmware \
+  nxpwireless-firmware \
+  podman \
+  python3-boto3 \
+  python3-botocore \
+  realtek-firmware \
+  samba-client-libs \
+  samba-common \
+  samba-common-libs \
+  WALinuxAgent-udev \
+  xfsprogs \
+  xkeyboard-config
 
 # Then update what we have left over
 RUN dnf update -y && dnf clean all
