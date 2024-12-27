@@ -42,6 +42,9 @@ RUN chmod +x /usr/local/bin/k0s
 COPY ./etc/k0s/k0s.yaml /etc/k0s/k0s.yaml
 RUN k0s config validate --config /etc/k0s/k0s.yaml
 COPY ./etc/systemd/system/k0scontroller.service /etc/systemd/system/k0scontroller.service
+RUN useradd --home /var/lib/k0s --shell /usr/sbin/nologin --system --no-create-home konnectivity-server
+RUN useradd --home /var/lib/k0s --shell /usr/sbin/nologin --system --no-create-home kube-apiserver
+RUN useradd --home /var/lib/k0s --shell /usr/sbin/nologin --system --no-create-home kube-scheduler
 
 # Install K9s (a K8s TUI)
 # see: https://k9scli.io/
