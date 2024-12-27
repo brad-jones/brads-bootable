@@ -43,6 +43,11 @@ COPY ./etc/k0s/k0s.yaml /etc/k0s/k0s.yaml
 RUN k0s config validate --config /etc/k0s/k0s.yaml
 COPY ./etc/systemd/system/k0scontroller.service /etc/systemd/system/k0scontroller.service
 
+# Install K9s (a K8s TUI)
+# see: https://k9scli.io/
+ARG K9S_VERSION="0.32.7"
+RUN rpm -ivh "https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_linux_amd64.rpm"
+
 # Add some hints for sbom generation
 # see: https://github.com/Shopify/hansel
 COPY --from=hansel /usr/bin/hansel /usr/bin/hansel
