@@ -64,6 +64,9 @@ RUN echo 'export KUBECONFIG="/var/lib/k0s/pki/admin.conf"' > /etc/profile.d/kube
 # Alias to the built-in kubectl
 RUN echo 'kubectl() { k0s kubectl "$@"; }' > /etc/profile.d/kubectl.sh
 
+# Setup bash autocomplete
+RUN k0s completion bash > /etc/bash_completion.d/k0s.sh
+
 # Install K9s (a K8s TUI)
 # see: https://k9scli.io/
 ARG K9S_VERSION="0.32.7"
