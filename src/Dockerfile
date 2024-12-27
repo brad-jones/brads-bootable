@@ -1,3 +1,5 @@
+FROM ghcr.io/shopify/hansel:0.0.14 AS hansel
+
 FROM quay.io/fedora/fedora-bootc:41
 
 # Force dnf to download from the primary fedora mirror
@@ -29,3 +31,20 @@ COPY ./etc/sudoers.d/wheel /etc/sudoers.d/wheel
 # I think I'd like to leave the rebooting up to me to do manually.
 # Especially given that this is a single node system for now.
 COPY ./etc/systemd/system/bootc-fetch-apply-updates.service.d/override.conf /etc/systemd/system/bootc-fetch-apply-updates.service.d/override.conf
+
+# Install K0s
+# see: https://k0sproject.io
+ARG K0S_VERSION="1.31.3"
+ARG K0S_FILENAME="v${K0S_VERSION}+k0s.0"
+ARG K0S_BASE_URL="https://github.com/k0sproject/k0s/releases/download"
+RUN curl -SLf "${K0S_BASE_URL}/${K0S_FILENAME}/k0s-${K0S_FILENAME}-amd64" -o /usr/local/bin/k0s
+RUN chmod +x /usr/local/bin/k0s
+COPY ./etc/k0s/k0s.yaml /etc/k0s/k0s.yaml
+RUN k0s config validate --config /etc/k0s/k0s.yaml
+COPY ./etc/systemd/system/k0scontroller.service /etc/systemd/system/k0scontroller.service
+
+# Add some hints for sbom generation
+# see: https://github.com/Shopify/hansel
+COPY --from=hansel /usr/bin/hansel /usr/bin/hansel
+RUN hansel --name k0s --version "$(k0s version | grep -Po '\d+\.\d+\.\d+')" --install
+RUN rm /usr/bin/hansel

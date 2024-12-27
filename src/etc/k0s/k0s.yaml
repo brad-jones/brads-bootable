@@ -1,0 +1,8 @@
+# see: https://docs.k0sproject.io/stable/configuration/#configuration-file-reference
+
+spec:
+  api:
+    address: 192.168.254.4
+    sans:
+      - 192.168.254.4
+      - mini1.home.bjc.id.au
