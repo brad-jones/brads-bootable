@@ -61,6 +61,9 @@ RUN systemctl enable kubeconfig.service
 # Setup a KUBECONFIG env var
 RUN echo 'export KUBECONFIG="/var/lib/k0s/pki/admin.conf"' > /etc/profile.d/kubeconfig.sh
 
+# Alias to the built-in kubectl
+RUN echo 'kubectl() { k0s kubectl "$@"; }' > /etc/profile.d/kubectl.sh
+
 # Install K9s (a K8s TUI)
 # see: https://k9scli.io/
 ARG K9S_VERSION="0.32.7"
