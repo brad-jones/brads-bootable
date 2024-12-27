@@ -1,6 +1,7 @@
-FROM ghcr.io/shopify/hansel:0.0.14 AS hansel
-
-FROM quay.io/fedora/fedora-bootc:41
+ARG FEDORA_VERSION="41"
+ARG HANSEL_VERSION="0.0.14"
+FROM ghcr.io/shopify/hansel:$HANSEL_VERSION AS hansel
+FROM quay.io/fedora/fedora-bootc:$FEDORA_VERSION
 
 # Force dnf to download from the primary fedora mirror
 # To avoid this issue: https://github.com/osbuild/bootc-image-builder/pull/766

@@ -10,8 +10,11 @@ const BOOTABLE_ISO = `ghcr.io/brad-jones/brads-bootable/iso`;
 const dateString = dayjs.utc().format("YYYYMMDD");
 const latestCommitSha = await getLatestCommitSha();
 const nextCommitSha = Deno.env.get("GITHUB_SHA")!.substring(0, 8);
-const fedoraVersion = (await Deno.readTextFile("src/Dockerfile")).split("\n")[0]
-  .split(":")[1].trim();
+const fedoraVersion = (await Deno.readTextFile("src/Dockerfile")).split("\n")
+  .find((_) => _.startsWith("ARG FEDORA_VERSION"))!.split("=")[1].replaceAll(
+    '"',
+    "",
+  );
 const releaseTitle =
   `Fedora ${fedoraVersion} - ${dateString} (sha: ${nextCommitSha})`;
 const releaseTag = `${fedoraVersion}-${dateString}-${nextCommitSha}`;
