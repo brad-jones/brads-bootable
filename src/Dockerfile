@@ -55,6 +55,8 @@ RUN rm -rf /opt && mkdir -p /var/opt && ln -s var/opt /opt
 # give permissions to users in the wheel group
 COPY ./etc/systemd/system/kubeconfig.path /etc/systemd/system/kubeconfig.path
 COPY ./etc/systemd/system/kubeconfig.service /etc/systemd/system/kubeconfig.service
+RUN systemctl enable kubeconfig.path
+RUN systemctl enable kubeconfig.service
 
 # Setup a KUBECONFIG env var
 RUN echo 'export KUBECONFIG="/var/lib/k0s/pki/admin.conf"' > /etc/profile.d/kubeconfig.sh
