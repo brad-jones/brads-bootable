@@ -3,6 +3,8 @@ ARG HANSEL_VERSION="0.0.14"
 FROM ghcr.io/shopify/hansel:$HANSEL_VERSION AS hansel
 FROM quay.io/fedora/fedora-bootc:$FEDORA_VERSION
 
+# TODO: https://docs.fedoraproject.org/en-US/bootc/os-release-and-versions/
+
 # Force dnf to download from the primary fedora mirror
 # To avoid this issue: https://github.com/osbuild/bootc-image-builder/pull/766
 RUN rm -f /etc/yum.repos.d/fedora-cisco-openh264.repo
@@ -46,6 +48,16 @@ COPY ./etc/systemd/system/k0scontroller.service /etc/systemd/system/k0scontrolle
 RUN useradd --home /var/lib/k0s --shell /usr/sbin/nologin --system --no-create-home konnectivity-server
 RUN useradd --home /var/lib/k0s --shell /usr/sbin/nologin --system --no-create-home kube-apiserver
 RUN useradd --home /var/lib/k0s --shell /usr/sbin/nologin --system --no-create-home kube-scheduler
+
+# kube-router wants to write stuff to /opt/cni
+RUN rm -rf /opt && mkdir -p /var/opt && ln -s var/opt /opt
+
+# give permissions to users in the wheel group
+RUN chown :wheel /var/lib/k0s/pki/admin.conf \
+  && chmod g+r /var/lib/k0s/pki/admin.conf
+
+# Setup a KUBECONFIG env var
+RUN echo 'export KUBECONFIG="/var/lib/k0s/pki/admin.conf"' > /etc/profile.d/kubeconfig.sh
 
 # Install K9s (a K8s TUI)
 # see: https://k9scli.io/
