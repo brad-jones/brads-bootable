@@ -81,8 +81,9 @@ RUN mkdir -p /tmp/flux && \
   && mv /tmp/flux/flux /usr/local/bin/flux \
   && chmod +x /usr/local/bin/flux \
   && rm -rf /tmp/flux
-COPY ./var/lib/k0s/manifests/flux/config.yaml /var/lib/k0s/manifests/flux/02_config.yaml
-RUN curl -SLf "${FLUX_BASE_URL}/v${FLUX_VERSION}/install.yaml" -o /var/lib/k0s/manifests/flux/01_install.yaml
+COPY ./var/lib/k0s/manifests/flux/config.yaml /usr/share/factory/var/lib/k0s/manifests/flux/02_config.yaml
+RUN curl -SLf "${FLUX_BASE_URL}/v${FLUX_VERSION}/install.yaml" -o /usr/share/factory/var/lib/k0s/manifests/flux/01_install.yaml
+RUN echo "C+ /var/lib/k0s/manifests/flux - - - -" >/usr/lib/tmpfiles.d/flux.conf
 
 # Add some hints for sbom generation
 # see: https://github.com/Shopify/hansel
