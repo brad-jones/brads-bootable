@@ -13,6 +13,23 @@ tasks:
       - git config core.editor "code --wait"
       - git config commit.template "$PWD/.gitmsgtpl"
 
+  init:cluster:
+    vars:
+      AGE_KEY:
+        sh: gopass -o brads-bootable/age.key
+      GH_TOKEN:
+        sh: gopass -o brads-bootable/gh.token
+    cmds:
+      - ssh brad-jones@192.168.254.4 kubectl create secret generic brads-bootable-gh-token --namespace flux-system --from-literal=bearerToken={{.GH_TOKEN}}
+      - ssh brad-jones@192.168.254.4 kubectl create secret generic brads-bootable-age-key --namespace flux-system --from-literal=age.agekey={{.AGE_KEY}}
+
+  secrets:edit:
+    env:
+      SOPS_AGE_KEY:
+        sh: gopass -o brads-bootable/age.key
+    cmds:
+      - sops edit ./k8s/config/secrets.sops.yaml
+
   build:image:
     cmds:
       - docker build -t ghcr.io/brad-jones/brads-bootable:dev ./src

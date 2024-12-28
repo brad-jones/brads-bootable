@@ -72,8 +72,21 @@ RUN k0s completion bash > /etc/bash_completion.d/k0s.sh
 ARG K9S_VERSION="0.32.7"
 RUN rpm -ivh "https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_linux_amd64.rpm"
 
+# Install FluxCD
+ARG FLUX_VERSION="2.4.0"
+ARG FLUX_BASE_URL="https://github.com/fluxcd/flux2/releases/download"
+RUN mkdir -p /tmp/flux && \
+  curl -SLf "${FLUX_BASE_URL}/v${FLUX_VERSION}/flux_${FLUX_VERSION}_linux_amd64.tar.gz" -o /tmp/flux/flux.tar.gz \
+  && tar -xf /tmp/flux/flux.tar.gz -C /tmp/flux \
+  && mv /tmp/flux/flux /usr/local/bin/flux \
+  && chmod +x /usr/local/bin/flux \
+  && rm -rf /tmp/flux
+COPY ./var/lib/k0s/manifests/flux/config.yaml /var/lib/k0s/manifests/flux/02_config.yaml
+RUN curl -SLf "${FLUX_BASE_URL}/v${FLUX_VERSION}/install.yaml" -o /var/lib/k0s/manifests/flux/01_install.yaml
+
 # Add some hints for sbom generation
 # see: https://github.com/Shopify/hansel
 COPY --from=hansel /usr/bin/hansel /usr/bin/hansel
 RUN hansel --name k0s --version "$(k0s version | grep -Po '\d+\.\d+\.\d+')" --install
+RUN hansel --name flux --version "$(flux --version | grep -Po '\d+\.\d+\.\d+')" --install
 RUN rm /usr/bin/hansel
