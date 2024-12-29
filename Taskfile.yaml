@@ -28,7 +28,7 @@ tasks:
       SOPS_AGE_KEY:
         sh: gopass -o brads-bootable/age.key
     cmds:
-      - sops edit ./k8s/config/secrets.sops.yaml
+      - sops edit ./k8s/secrets.sops.yaml
 
   build:image:
     cmds:
