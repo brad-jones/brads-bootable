@@ -15,15 +15,34 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: brads-bootable-cluster
+  name: brads-bootable-cluster-config
   namespace: flux-system
 spec:
-  interval: 10m0s
-  path: ./k8s
+  interval: 1m0s
+  path: ./k8s/config
   prune: true
   sourceRef:
     kind: GitRepository
     name: brads-bootable-repo
+  decryption:
+    provider: sops
+    secretRef:
+      name: brads-bootable-age-key
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: brads-bootable-cluster
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  path: ./k8s/cluster
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: brads-bootable-repo
+  dependsOn:
+    - name: brads-bootable-cluster-config
   decryption:
     provider: sops
     secretRef:
