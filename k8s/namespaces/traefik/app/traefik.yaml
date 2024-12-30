@@ -19,7 +19,7 @@ spec:
     spec:
       chart: traefik
       version: ">=33.0.0 <34.0.0"
-      interval: 12h
+      interval: 1m
       sourceRef:
         kind: HelmRepository
         name: traefik-helm-repo
