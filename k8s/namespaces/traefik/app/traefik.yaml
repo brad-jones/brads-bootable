@@ -4,7 +4,6 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: traefik-helm-repo
-  namespace: traefik
 spec:
   interval: 24h
   url: https://traefik.github.io/charts
@@ -14,7 +13,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: traefik-helm-release
-  namespace: traefik
 spec:
   interval: 30m
   chart:
@@ -32,8 +30,7 @@ spec:
         enabled: false
       kubernetesGateway:
         enabled: true
-    #experimental:
-    #  kubernetesGateway:
-    #    enabled: true
     gateway:
-      namespacePolicy: All
+      listeners:
+        web:
+          namespacePolicy: All
