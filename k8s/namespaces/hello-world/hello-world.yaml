@@ -47,6 +47,7 @@ metadata:
   name: web-server-ingress
   namespace: hello-world
 spec:
+  ingressClassName: nginx
   rules:
     - host: web.example.com
       http:
