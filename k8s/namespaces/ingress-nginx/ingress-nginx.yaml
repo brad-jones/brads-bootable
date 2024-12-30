@@ -40,3 +40,7 @@ spec:
       healthCheckHost: 192.168.254.4
       service:
         enabled: false
+        external:
+          enabled: false
+        internal:
+          enabled: false
