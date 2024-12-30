@@ -20,20 +20,3 @@ tasks:
   pull:iso:
     cmds:
       - oras pull ghcr.io/brad-jones/brads-bootable/iso:latest -o ./iso
-
-  flux:init:
-    vars:
-      AGE_KEY:
-        sh: gopass -o brads-bootable/age.key
-      GH_TOKEN:
-        sh: gopass -o brads-bootable/gh.token
-    cmds:
-      - ssh brad-jones@192.168.254.4 kubectl create secret generic cluster-repo-token --namespace flux-system --from-literal=username=git --from-literal=password={{.GH_TOKEN}}
-      - ssh brad-jones@192.168.254.4 kubectl create secret generic cluster-age-key --namespace flux-system --from-literal=age.agekey={{.AGE_KEY}}
-
-  secrets:edit:
-    env:
-      SOPS_AGE_KEY:
-        sh: gopass -o brads-bootable/age.key
-    cmds:
-      - sops edit ./k8s/secrets.sops.yaml
