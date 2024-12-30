@@ -13,70 +13,6 @@ tasks:
       - git config core.editor "code --wait"
       - git config commit.template "$PWD/.gitmsgtpl"
 
-  argo:init:
-    vars:
-      GH_TOKEN:
-        sh: gopass -o brads-bootable/gh.token
-      K8S_MANIFEST: |
-        apiVersion: v1
-        kind: Secret
-        metadata:
-          name: brads-bootable-gh-token
-          namespace: argocd
-          labels:
-            argocd.argoproj.io/secret-type: repository
-        stringData:
-          type: git
-          url: https://github.com/brad-jones/brads-bootable.git
-          username: git
-          password: {{.GH_TOKEN}}
-        ---
-        apiVersion: argoproj.io/v1alpha1
-        kind: Application
-        metadata:
-          name: brads-bootable-cluster
-          namespace: argocd
-          finalizers:
-            - resources-finalizer.argocd.argoproj.io
-        spec:
-          project: default
-          source:
-            repoURL: https://github.com/brad-jones/brads-bootable.git
-            targetRevision: HEAD
-            path: k8s/argocd
-          destination:
-            server: https://kubernetes.default.svc
-          syncPolicy:
-            automated:
-              prune: true
-              selfHeal: true
-              allowEmpty: true
-            syncOptions:
-              - ApplyOutOfSyncOnly=true
-    cmds:
-      - echo "{{.K8S_MANIFEST}}" | ssh brad-jones@192.168.254.4 kubectl apply -f -
-
-  argo:sync:
-    cmds:
-      - ssh brad-jones@192.168.254.4 argocd app sync brads-bootable-cluster
-
-  init:fluxcd:
-    vars:
-      AGE_KEY:
-        sh: gopass -o brads-bootable/age.key
-      GH_TOKEN:
-        sh: gopass -o brads-bootable/gh.token
-    cmds:
-      - ssh brad-jones@192.168.254.4 kubectl create secret generic brads-bootable-gh-token --namespace flux-system --from-literal=username=git --from-literal=password={{.GH_TOKEN}}
-      - ssh brad-jones@192.168.254.4 kubectl create secret generic brads-bootable-age-key --namespace flux-system --from-literal=age.agekey={{.AGE_KEY}}
-
-  secrets:edit:
-    env:
-      SOPS_AGE_KEY:
-        sh: gopass -o brads-bootable/age.key
-    cmds:
-      - sops edit ./k8s/secrets.sops.yaml
-
   build:image:
     cmds:
       - docker build -t ghcr.io/brad-jones/brads-bootable:dev ./src
@@ -84,3 +20,7 @@ tasks:
   pull:iso:
     cmds:
       - oras pull ghcr.io/brad-jones/brads-bootable/iso:latest -o ./iso
+
+  kluctl:init:
+    cmds:
+      - podman run --rm -it --privileged --user $(id -u):$(id -g) -v $(pwd):$(pwd) -w $(pwd) -v $KUBECONFIG:$KUBECONFIG:ro -e KUBECONFIG ghcr.io/kluctl/kluctl:v2.26.0 controller install -y
