@@ -14,12 +14,12 @@ kind: HelmRelease
 metadata:
   name: traefik-helm-release
 spec:
-  interval: 1m
+  interval: 1m0s
   chart:
     spec:
       chart: traefik
       version: ">=33.0.0 <34.0.0"
-      interval: 1m
+      interval: 1m0s
       sourceRef:
         kind: HelmRepository
         name: traefik-helm-repo
@@ -50,8 +50,4 @@ spec:
     logs:
       access:
         enabled: true
-    ingressRoute:
-      dashboard:
-        enabled: true
-      entryPoints: ["web"]
     globalArguments: []
