@@ -34,3 +34,6 @@ spec:
       listeners:
         web:
           namespacePolicy: All
+    ingressRoute:
+      dashboard:
+        enabled: true
