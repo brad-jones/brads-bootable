@@ -35,20 +35,20 @@ spec:
     ports:
       traefik:
         port: 8080
-        hostPort: 8080
+        #hostPort: 8080
       web:
-        port: 8000
-        hostPort: 80
+        port: 80
+        #hostPort: 80
       websecure:
-        port: 8443
-        hostPort: 443
+        port: 443
+        #hostPort: 443
     gateway:
       listeners:
         web:
-          port: 8000
+          port: 80
           namespacePolicy: All
         websecure:
-          port: 8443
+          port: 443
           namespacePolicy: All
     logs:
       access:
