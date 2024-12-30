@@ -49,6 +49,6 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: whoami
+        - name: whoami-service
           namespace: whoami
           port: 80
