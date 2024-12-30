@@ -34,10 +34,13 @@ spec:
       enabled: false
     ports:
       traefik:
+        port: 8080
         hostPort: 8080
       web:
+        port: 8000
         hostPort: 80
       websecure:
+        port: 8443
         hostPort: 443
     gateway:
       listeners:
