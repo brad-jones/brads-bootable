@@ -30,9 +30,12 @@ spec:
         enabled: false
       kubernetesGateway:
         enabled: true
+    service:
+      enabled: false
     ports:
       traefik:
         port: 8080
+        hostPort: 8080
       web:
         port: 80
       websecure:
@@ -52,3 +55,4 @@ spec:
       dashboard:
         enabled: true
       entryPoints: ["web"]
+    globalArguments: []
