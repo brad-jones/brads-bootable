@@ -4,4 +4,4 @@ kind: Kustomization
 resources:
   - ./config/settings.yaml
   - ./config/secrets.sops.yaml
-  - .flux.yaml
+  - ./flux.yaml
