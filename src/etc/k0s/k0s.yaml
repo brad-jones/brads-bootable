@@ -6,3 +6,6 @@ spec:
     sans:
       - 192.168.254.4
       - mini1.home.bjc.id.au
+  network:
+    kuberouter:
+      metricsPort: 0
