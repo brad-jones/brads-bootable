@@ -1,0 +1,45 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/master/namespace.json
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: traefik
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/helmrepository-source-v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: traefik-helm-repo
+  namespace: traefik
+spec:
+  interval: 24h
+  url: https://traefik.github.io/charts
+---
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/refs/heads/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: traefik-helm-release
+  namespace: traefik
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: traefik
+      version: ">=33.0.0 <34.0.0"
+      interval: 12h
+      sourceRef:
+        kind: HelmRepository
+        name: traefik-helm-repo
+  values:
+    hostNetwork: true
+    providers:
+      kubernetesIngress:
+        enabled: false
+      kubernetesGateway:
+        enabled: true
+    #experimental:
+    #  kubernetesGateway:
+    #    enabled: true
+    gateway:
+      namespacePolicy: All

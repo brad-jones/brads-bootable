@@ -12,6 +12,7 @@ metadata:
   name: web-server
   namespace: hello-world
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: web
