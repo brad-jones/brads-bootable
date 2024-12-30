@@ -45,8 +45,10 @@ spec:
     gateway:
       listeners:
         web:
+          port: 8000
           namespacePolicy: All
         websecure:
+          port: 8443
           namespacePolicy: All
     logs:
       access:
