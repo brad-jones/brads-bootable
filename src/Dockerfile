@@ -48,18 +48,25 @@ COPY ./etc/systemd/system/k0scontroller.service /etc/systemd/system/k0scontrolle
 RUN useradd --home /var/lib/k0s --shell /usr/sbin/nologin --system --no-create-home konnectivity-server
 RUN useradd --home /var/lib/k0s --shell /usr/sbin/nologin --system --no-create-home kube-apiserver
 RUN useradd --home /var/lib/k0s --shell /usr/sbin/nologin --system --no-create-home kube-scheduler
+RUN echo 'export KUBECONFIG="/var/lib/k0s/pki/admin.conf"' > /etc/profile.d/kubeconfig.sh
+RUN echo 'kubectl() { k0s kubectl "$@"; }' > /etc/profile.d/kubectl.sh
+RUN k0s completion bash > /etc/bash_completion.d/k0s.sh
 
 # kube-router wants to write stuff to /opt/cni
 RUN rm -rf /opt && mkdir -p /var/opt && ln -s var/opt /opt
 
-# Setup a KUBECONFIG env var
-RUN echo 'export KUBECONFIG="/var/lib/k0s/pki/admin.conf"' > /etc/profile.d/kubeconfig.sh
-
-# Alias to the built-in kubectl
-RUN echo 'kubectl() { k0s kubectl "$@"; }' > /etc/profile.d/kubectl.sh
-
-# Setup bash autocomplete
-RUN k0s completion bash > /etc/bash_completion.d/k0s.sh
+# Install FluxCD
+ARG FLUX_VERSION="2.4.0"
+ARG FLUX_BASE_URL="https://github.com/fluxcd/flux2/releases/download"
+RUN mkdir -p /tmp/flux && \
+  curl -SLf "${FLUX_BASE_URL}/v${FLUX_VERSION}/flux_${FLUX_VERSION}_linux_amd64.tar.gz" -o /tmp/flux/flux.tar.gz \
+  && tar -xf /tmp/flux/flux.tar.gz -C /tmp/flux \
+  && mv /tmp/flux/flux /usr/local/bin/flux \
+  && chmod +x /usr/local/bin/flux \
+  && rm -rf /tmp/flux
+COPY ./var/lib/k0s/manifests/flux/config.yaml /usr/share/factory/var/lib/k0s/manifests/flux/02_config.yaml
+RUN curl -SLf "${FLUX_BASE_URL}/v${FLUX_VERSION}/install.yaml" -o /usr/share/factory/var/lib/k0s/manifests/flux/01_install.yaml
+RUN echo "C+ /var/lib/k0s/manifests/flux - - - -" >/usr/lib/tmpfiles.d/flux.conf
 
 # Install K9s (a K8s TUI)
 # see: https://k9scli.io/
@@ -70,4 +77,5 @@ RUN rpm -ivh "https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/
 # see: https://github.com/Shopify/hansel
 COPY --from=hansel /usr/bin/hansel /usr/bin/hansel
 RUN hansel --name k0s --version "$(k0s version | grep -Po '\d+\.\d+\.\d+')" --install
+RUN hansel --name flux --version "$(flux --version | grep -Po '\d+\.\d+\.\d+')" --install
 RUN rm /usr/bin/hansel

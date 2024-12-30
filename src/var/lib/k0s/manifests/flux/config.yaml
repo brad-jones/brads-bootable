@@ -1,0 +1,35 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/gitrepository-source-v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: cluster-repo
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  url: https://github.com/brad-jones/brads-bootable
+  ref:
+    branch: master
+  ignore: |
+    /*
+    !/k8s
+  secretRef:
+    name: cluster-repo-token
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: cluster
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  path: ./k8s
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: cluster-repo
+  decryption:
+    provider: sops
+    secretRef:
+      name: cluster-age-key
