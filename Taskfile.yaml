@@ -6,7 +6,7 @@ dotenv: [".env"]
 
 tasks:
   init:
-    desc: Setup local dev env
+    desc: Setup local dev env (executed automatically by pixi)
     cmds:
       - lefthook install -f
       - git config pull.rebase true
@@ -20,6 +20,12 @@ tasks:
 
   pull:iso:
     desc: Downloads the latest bootable ISO from ghcr.io
+    summary: |
+      Use something like https://etcher.balena.io/ to flash it to media.
+      https://www.ventoy.net/ also works well.
+
+      Then boot off this and it will automatically install.
+      WARNING: It will without prompting format all nvme disks!
     cmds:
       - oras pull ghcr.io/brad-jones/brads-bootable/iso:latest -o ./iso
 
@@ -30,31 +36,42 @@ tasks:
     cmds:
       - deno run -qA ./.tasks/kubeconfig-copier.ts
 
+  goj:init:
+    desc: After firstboot, run this to inject secrets to allow further cluster configuration via a Pulumi stack.
+    vars:
+      PULUMI_KEY:
+        sh: gopass -o brads-bootable/pulumi.key
+      GH_TOKEN:
+        sh: gopass -o brads-bootable/gh.token
+    cmds:
+      - kubectl --context mini1 -n goj-system create secret generic goj-git-bearer-token --from-literal=value={{.GH_TOKEN}}
+      - kubectl --context mini1 -n goj-system create secret generic goj-pulumi-key --from-literal=value="{{.PULUMI_KEY}}"
+
+  goj:run:
+    desc: Run GitOpsJob on demand instead of waiting for the cron schedule.
+    vars:
+      JOB:
+        sh: echo "git-ops-job-$(tr -dc a-z0-9 </dev/urandom | head -c 13; echo)"
+    cmds:
+      - kubectl --context mini1 -n goj-system create job {{.JOB}} --from=cronjob/git-ops-cron-job
+      - kubectl --context mini1 -n goj-system wait --for=condition=Ready pod -l=job-name={{.JOB}}
+      - kubectl --context mini1 -n goj-system logs -f job/{{.JOB}}
+
   goj:test:
+    desc: Same as task goj:install && task goj:run, useful while working on goj it's self
     cmds:
       - task: goj:install
       - task: goj:run
 
-  goj:install:
-    vars:
-      AGE_KEY:
-        sh: gopass -o brads-bootable/age.key
-      GH_TOKEN:
-        sh: gopass -o brads-bootable/gh.token
+  goj:reinstall:
+    desc: Reinstalls GitOpsJob, useful while working on goj it's self
     cmds:
       - kubectl --context mini1 delete namespace/goj-system || true
       - kubectl --context mini1 wait --for=delete namespace/goj-system --timeout=60s
       - kubectl --context mini1 apply -f ./src/var/lib/k0s/manifests/goj/install.yaml
-      - kubectl --context mini1 -n goj-system create secret generic goj-git-bearer-token --from-literal=value={{.GH_TOKEN}}
-
-  goj:run:
-    vars:
-      JOB:
-        sh: kubectl --context mini1 create -f ./src/var/lib/k0s/manifests/goj/job.yaml -o=jsonpath={.metadata.name}
-    cmds:
-      - kubectl --context mini1 -n goj-system wait --for=condition=Ready pod -l=job-name={{.JOB}}
-      - kubectl --context mini1 -n goj-system logs -f job/{{.JOB}}
+      - task: goj:init
 
   goj:clear:
+    desc: Deletes all jobs from the goj-system namespace
     cmds:
       - kubectl delete jobs -n goj-system --all

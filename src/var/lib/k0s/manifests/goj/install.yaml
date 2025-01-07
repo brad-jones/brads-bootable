@@ -1,0 +1,115 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: goj-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: goj-service-account
+  namespace: goj-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: goj-service-account-role
+  namespace: goj-system
+subjects:
+  - kind: ServiceAccount
+    name: goj-service-account
+    namespace: goj-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: git-ops-job-entrypoint
+  namespace: goj-system
+data:
+  script: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    git config --global url."https://${GIT_BEARER_TOKEN}@github.com/".insteadOf "https://github.com/"
+
+    set -x
+
+    if ! [ -d "./repo" ]; then
+      git clone $GIT_HTTPS_URL ./repo
+      cd ./repo
+    else
+      cd ./repo
+      git reset --hard @{u}
+      git clean -xdf
+      git pull
+    fi
+
+    cd ./$GIT_SUB_DIR
+    mkdir -p /var/goj/state/backend
+    pulumi install --non-interactive
+    pulumi stack init -s $PULUMI_STACK || true
+    pulumi up -r -s $PULUMI_STACK --non-interactive --skip-preview --diff
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: git-ops-cron-job
+  namespace: goj-system
+spec:
+  schedule: "0 * * * *"
+  failedJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  timeZone: Australia/Melbourne
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          serviceAccountName: goj-service-account
+          restartPolicy: Never
+          containers:
+            - name: git-ops-job-container
+              image: pulumi/pulumi:3.144.1
+              imagePullPolicy: IfNotPresent
+              command: [timeout, 15m, bash, /entrypoint.sh]
+              workingDir: /var/goj/state
+              volumeMounts:
+                - name: state
+                  mountPath: /var/goj/state
+                - name: entrypoint
+                  subPath: script
+                  mountPath: /entrypoint.sh
+              env:
+                - name: GIT_HTTPS_URL
+                  value: https://github.com/brad-jones/brads-bootable.git
+                - name: GIT_SUB_DIR
+                  value: k8s
+                - name: GIT_BEARER_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: goj-git-bearer-token
+                      key: value
+                - name: PULUMI_STACK
+                  value: brads-cluster
+                - name: PULUMI_BACKEND_URL
+                  value: file:///var/goj/state/backend
+                - name: PULUMI_SKIP_UPDATE_CHECK
+                  value: "true"
+                - name: PULUMI_CONFIG_PASSPHRASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: goj-pulumi-key
+                      key: value
+          volumes:
+            - name: state
+              hostPath:
+                path: /var/goj/state
+                type: DirectoryOrCreate
+            - name: entrypoint
+              configMap:
+                name: git-ops-job-entrypoint

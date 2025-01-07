@@ -55,6 +55,11 @@ RUN k0s completion bash > /etc/bash_completion.d/k0s.sh
 # kube-router wants to write stuff to /opt/cni
 RUN rm -rf /opt && mkdir -p /var/opt && ln -s var/opt /opt
 
+# Install GitOpsJob (goj)
+# My home grown git ops solution
+COPY ./var/lib/k0s/manifests/goj /usr/share/factory/var/lib/k0s/manifests/goj
+RUN echo "C+ /var/lib/k0s/manifests/goj - - - -" >/usr/lib/tmpfiles.d/goj.conf
+
 # Install K9s (a K8s TUI)
 # see: https://k9scli.io/
 ARG K9S_VERSION="0.32.7"
