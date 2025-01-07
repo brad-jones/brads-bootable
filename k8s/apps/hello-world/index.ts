@@ -64,7 +64,7 @@ export class HelloWorld extends ComponentResource {
     }, { parent: this });
 
     const sleep = new time.Sleep(`${name}-hello-world`, {
-      createDuration: "5s",
+      createDuration: "15s",
     }, {
       dependsOn: [inputs.nginxChart],
     });
