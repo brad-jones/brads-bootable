@@ -7,6 +7,7 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "dprint.dprint",
   "deno.importMap": "./deno.json",
+  "deno.disablePaths": ["./k8s"],
   "[json]": {
     "editor.defaultFormatter": "dprint.dprint"
   },

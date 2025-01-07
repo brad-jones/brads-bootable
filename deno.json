@@ -2,6 +2,9 @@
   "imports": {
     "@cspotcode/outdent": "jsr:@cspotcode/outdent@^0.8.0",
     "@david/dax": "jsr:@david/dax@^0.42.0",
+    "@std/collections": "jsr:@std/collections@^1.0.9",
+    "@std/path": "jsr:@std/path@^1.0.8",
+    "@std/yaml": "jsr:@std/yaml@^1.0.5",
     "dayjs": "npm:dayjs@^1.11.13",
     "zod": "npm:zod@^3.24.1"
   }
