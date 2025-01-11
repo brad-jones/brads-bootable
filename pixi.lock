@@ -11,12 +11,12 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/age-1.2.1-ha770c72_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ca-certificates-2024.12.14-hbcca054_0.conda
       - conda: https://repo.prefix.dev/brads-forge/linux-64/cocogitto-6.2.0-h81b34b9_2.conda
-      - conda: https://repo.prefix.dev/brads-forge/linux-64/deno-2.1.4-h81b34b9_2.conda
+      - conda: https://repo.prefix.dev/brads-forge/linux-64/deno-2.1.5-h81b34b9_2.conda
       - conda: https://repo.prefix.dev/brads-forge/linux-64/dprint-0.48.0-h81b34b9_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/go-shfmt-3.10.0-h85d4a8e_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/go-sops-3.9.2-ha770c72_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/icu-75.1-he02047a_0.conda
-      - conda: https://repo.prefix.dev/brads-forge/linux-64/lefthook-1.10.0-h81b34b9_2.conda
+      - conda: https://repo.prefix.dev/brads-forge/linux-64/lefthook-1.10.1-h81b34b9_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgcc-14.2.0-h77fa898_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgcc-ng-14.2.0-h69a702a_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgomp-14.2.0-h77fa898_1.conda
@@ -25,10 +25,10 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libuv-1.49.2-hb9d3cd8_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libzlib-1.3.1-hb9d3cd8_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/nodejs-22.12.0-hf235a45_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/openssl-3.4.0-hb9d3cd8_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/openssl-3.4.0-h7b32b05_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/oras-1.2.0-ha8f183a_0.conda
       - conda: https://repo.prefix.dev/brads-forge/linux-64/task-3.40.1-h81b34b9_2.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/terraform-1.10.3-h76a2195_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/terraform-1.10.4-h76a2195_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zlib-1.3.1-hb9d3cd8_2.conda
 packages:
 - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
@@ -57,6 +57,8 @@ packages:
 - conda: https://conda.anaconda.org/conda-forge/linux-64/age-1.2.1-ha770c72_0.conda
   sha256: e49efd011f35d7cad38aa846bc36904ca48bf256442a72cdb169598ee14c4564
   md5: 70fd7ac28861e630e9f761a21642b06b
+  arch: x86_64
+  platform: linux
   license: BSD-3-Clause
   license_family: BSD
   size: 4193259
@@ -74,11 +76,11 @@ packages:
   license: MIT
   size: 2860349
   timestamp: 1734165589549
-- conda: https://repo.prefix.dev/brads-forge/linux-64/deno-2.1.4-h81b34b9_2.conda
-  sha256: 2bfd85885d47e8ce2ccbfc8731a904043a1a2596e5f5338d2236e5832d9a5f84
+- conda: https://repo.prefix.dev/brads-forge/linux-64/deno-2.1.5-h81b34b9_2.conda
+  sha256: 4a6254b3eb0128026bc6519b90a26fecda40e37f283c384583a514c3bc2ddf45
   license: MIT
-  size: 43565849
-  timestamp: 1734175121515
+  size: 43024986
+  timestamp: 1736480610535
 - conda: https://repo.prefix.dev/brads-forge/linux-64/dprint-0.48.0-h81b34b9_2.conda
   sha256: 7166091baac950afae5141da0cab667c1c208ba84754f30a98454221aa077231
   license: MIT
@@ -87,6 +89,8 @@ packages:
 - conda: https://conda.anaconda.org/conda-forge/linux-64/go-shfmt-3.10.0-h85d4a8e_0.conda
   sha256: 500fe5ddb2834f474b5d25d3bcf07eb88cdb6e511d43f2685a02d10758b0b0ca
   md5: c088b58a804d0acadfa8128872c6241c
+  arch: x86_64
+  platform: linux
   license: BSD-3-Clause
   license_family: BSD
   size: 2386651
@@ -94,6 +98,8 @@ packages:
 - conda: https://conda.anaconda.org/conda-forge/linux-64/go-sops-3.9.2-ha770c72_1.conda
   sha256: 9ec637ef9e037f00edd98e6ce038d0df1a6f9d62fc1f7ef7d123b917283622f8
   md5: b520dd083da26729e73cd2c3b4b0a00d
+  arch: x86_64
+  platform: linux
   license: MPL-2.0
   license_family: MOZILLA
   size: 23360985
@@ -111,11 +117,11 @@ packages:
   license_family: MIT
   size: 12129203
   timestamp: 1720853576813
-- conda: https://repo.prefix.dev/brads-forge/linux-64/lefthook-1.10.0-h81b34b9_2.conda
-  sha256: ed370a7e6b73011e2545ef62af8ca3608540c39b636fb4ff453b321c828e76e6
+- conda: https://repo.prefix.dev/brads-forge/linux-64/lefthook-1.10.1-h81b34b9_2.conda
+  sha256: 5fd002673b29d425f691785898e22d8b4a1f93cc7338c33e2aa4f92f74c35896
   license: MIT
-  size: 3985916
-  timestamp: 1734666143614
+  size: 3986623
+  timestamp: 1735270972643
 - conda: https://conda.anaconda.org/conda-forge/linux-64/libgcc-14.2.0-h77fa898_1.conda
   sha256: 53eb8a79365e58849e7b1a068d31f4f9e718dc938d6f2c03e960345739a03569
   md5: 3cb76c3f10d3bc7f1105b2fc9db984df
@@ -219,9 +225,9 @@ packages:
   license_family: MIT
   size: 21796933
   timestamp: 1734113054756
-- conda: https://conda.anaconda.org/conda-forge/linux-64/openssl-3.4.0-hb9d3cd8_0.conda
-  sha256: 814b9dff1847b132c676ee6cc1a8cb2d427320779b93e1b6d76552275c128705
-  md5: 23cc74f77eb99315c0360ec3533147a9
+- conda: https://conda.anaconda.org/conda-forge/linux-64/openssl-3.4.0-h7b32b05_1.conda
+  sha256: f62f6bca4a33ca5109b6d571b052a394d836956d21b25b7ffd03376abf7a481f
+  md5: 4ce6875f75469b2757a65e10a5d05e31
   depends:
   - __glibc >=2.17,<3.0.a0
   - ca-certificates
@@ -230,11 +236,13 @@ packages:
   platform: linux
   license: Apache-2.0
   license_family: Apache
-  size: 2947466
-  timestamp: 1731377666602
+  size: 2937158
+  timestamp: 1736086387286
 - conda: https://conda.anaconda.org/conda-forge/linux-64/oras-1.2.0-ha8f183a_0.conda
   sha256: 347727ff7742a93ff91d313e766c29d5c791692e86d7e55d9941128054421240
   md5: b49447dba28528f9c8499dd66f8f7119
+  arch: x86_64
+  platform: linux
   license: Apache-2.0
   license_family: APACHE
   size: 3478196
@@ -244,14 +252,16 @@ packages:
   license: MIT
   size: 5885331
   timestamp: 1734165541125
-- conda: https://conda.anaconda.org/conda-forge/linux-64/terraform-1.10.3-h76a2195_0.conda
-  sha256: fc327458c3b5baf24b1c1f78505ec4e3ba44b950166ba7e08c80f351e641fe0b
-  md5: a609a89d55d1f5a4484f7df1bc32c9a3
+- conda: https://conda.anaconda.org/conda-forge/linux-64/terraform-1.10.4-h76a2195_0.conda
+  sha256: cce03a1eac0d0f46f5197a03ee6199f8ca7f6014d844956815df5c2da1ca7602
+  md5: d27279f1505b141c2e7d79fe6f0c470d
   depends:
   - __glibc >=2.17,<3.0.a0
+  arch: x86_64
+  platform: linux
   license: BUSL-1.1
-  size: 20269793
-  timestamp: 1734537146902
+  size: 20272477
+  timestamp: 1736351105281
 - conda: https://conda.anaconda.org/conda-forge/linux-64/zlib-1.3.1-hb9d3cd8_2.conda
   sha256: 5d7c0e5f0005f74112a34a7425179f4eb6e73c92f5d109e6af4ddeca407c92ab
   md5: c9f075ab2f33b3bbee9e62d4ad0a6cd8
