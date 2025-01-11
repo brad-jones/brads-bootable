@@ -10,6 +10,12 @@ Wants=network-online.target
 StartLimitInterval=5
 StartLimitBurst=10
 ExecStart=/usr/local/bin/k0s controller --config=/etc/k0s/k0s.yaml --single=true
+
+# Fix for KubeVirt
+# see: https://github.com/kubevirt/kubevirt/issues/5913#issuecomment-2097432132
+ExecStartPre=sh -c 'mkdir -p /var/lib/k0s/kubelet /var/lib/kubelet && mount -o bind /var/lib/k0s/kubelet /var/lib/kubelet'
+
+# Give permissions to users in the wheel (ie: sudo) group
 ExecStartPost=sh -c 'sleep 5s && chown :wheel /var/lib/k0s/pki/admin.conf && chmod g+r /var/lib/k0s/pki/admin.conf && ls -hal /var/lib/k0s/pki/admin.conf'
 
 RestartSec=10
