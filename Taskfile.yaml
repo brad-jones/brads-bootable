@@ -12,6 +12,7 @@ tasks:
       - git config pull.rebase true
       - git config core.editor "code --wait"
       - git config commit.template "$PWD/.gitmsgtpl"
+      - kubectx mini1
 
   build:image:
     desc: Builds the OCI image that bootc will turn into a bootable ISO.
@@ -95,3 +96,17 @@ tasks:
     desc: Deletes all jobs from the goj-system namespace
     cmds:
       - kubectl delete jobs -n goj-system --all
+
+  goj:suspend:
+    desc: Suspends the automated cronjob, useful when applying the pulumi stack directly
+    vars:
+      PATCH: '{"spec":{"suspend":true}}'
+    cmds:
+      - kubectl --context mini1 -n goj-system patch cronjobs git-ops-cron-job -p '{{.PATCH}}'
+
+  goj:resume:
+    desc: Resumes the automated cronjob.
+    vars:
+      PATCH: '{"spec":{"suspend":false}}'
+    cmds:
+      - kubectl --context mini1 -n goj-system patch cronjobs git-ops-cron-job -p '{{.PATCH}}'
