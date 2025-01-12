@@ -50,12 +50,11 @@ tasks:
     cmds:
       - kubectx mini1
       - mkdir -p ./backend
-      - defer: rm -rf ./backend
       - >-
           sshfs brad-jones@192.168.254.4:/var/goj/state/backend ./backend
           -o sftp_server="/usr/bin/sudo -u root /usr/libexec/openssh/sftp-server"
       - defer: umount ./backend
-      - pulumi up -r -s brads-cluster
+      - pulumi up -s brads-cluster
 
   goj:init:
     desc: After firstboot, run this to inject secrets to allow further cluster configuration via a Pulumi stack.
