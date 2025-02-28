@@ -35,6 +35,10 @@ COPY ./etc/sudoers.d/wheel /etc/sudoers.d/wheel
 # Especially given that this is a single node system for now.
 COPY ./etc/systemd/system/bootc-fetch-apply-updates.service.d/override.conf /etc/systemd/system/bootc-fetch-apply-updates.service.d/override.conf
 
+# Install libvirt
+RUN dnf install -y libvirt virt-install
+RUN systemctl enable libvirtd
+
 # Install K0s
 # see: https://k0sproject.io
 ARG K0S_VERSION="1.31.3"
