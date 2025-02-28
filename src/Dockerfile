@@ -35,8 +35,8 @@ COPY ./etc/sudoers.d/wheel /etc/sudoers.d/wheel
 # Especially given that this is a single node system for now.
 COPY ./etc/systemd/system/bootc-fetch-apply-updates.service.d/override.conf /etc/systemd/system/bootc-fetch-apply-updates.service.d/override.conf
 
-# Install libvirt
-RUN dnf install -y libvirt virt-install
+# Install libvirt & qemu
+RUN dnf install -y qemu-kvm-core libvirt virt-install guestfs-tools
 RUN systemctl enable libvirtd
 
 # Install K0s
